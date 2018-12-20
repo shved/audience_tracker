@@ -1,0 +1,48 @@
+AllCops:
+  TargetRubyVersion: 2.5
+  Exclude:
+    - 'bin/**/*'
+
+Rails:
+  Enabled: true
+
+AlignParameters:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+  Exclude:
+    - spec/**/*
+
+Style/BlockComments:
+  Enabled: false
+
+Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Lint/MissingCopEnableDirective:
+  Enabled: false    
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
