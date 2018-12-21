@@ -3,3 +3,4 @@
 /doc/
 /rdoc/
 /log/
+/tmp/rack-cache/*

@@ -6,13 +6,13 @@ require_relative './lib/handler'
 class AudienceTracker < Roda
   plugin :json
   plugin :typecast_params
+  plugin :caching
 
   route do |r|
-    r.get 'heartbeat' do
-      video_id = typecast_params.pos_int('video_id')
+    r.get 'pulse' do
       customer_id = typecast_params.pos_int('customer_id')
-      Handler.instance.heartbeat(customer_id, video_id) if video_id && customer_id
-      # не возвращать ответ на этот запрос (найти как в роде это можно делать)
+      video_id    = typecast_params.pos_int('video_id')
+      Handler.instance.pulse(customer_id, video_id) if video_id && customer_id
       {}
     end
 
@@ -21,11 +21,10 @@ class AudienceTracker < Roda
       resp = { count: @count }
       puts resp
       resp
-      # возвращает стектрейс пятисотки lol
-      # a thin рендерит хтмл пятисотки лол
     end
 
     r.get 'videos', Integer do |video_id|
+      response.expires 60, public: true
       @count = Handler.instance.video_stat(video_id)
       resp = { count: @count }
       puts resp

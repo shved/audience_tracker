@@ -2,14 +2,15 @@ require 'singleton'
 require 'set'
 
 class DefaultStorage
-  # TODO: лочить стораж мютексом
   include Singleton
 
   StorageError = Class.new(StandardError)
 
-  def register_heartbeat(customer_id, video_id)
-    @videos[video_id] << customer_id
-    @customers[customer_id] << video_id
+  def record_pulse(customer_id, video_id)
+    @lock.synchronize do
+      @videos[video_id] << customer_id
+      @customers[customer_id] << video_id
+    end
   end
 
   def customer_stat(customer_id)
@@ -25,5 +26,6 @@ class DefaultStorage
   def initialize
     @videos = Hash.new { |hash, key| hash[key] = Set.new }
     @customers = Hash.new { |hash, key| hash[key] = Set.new }
+    @lock = Mutex.new
   end
 end

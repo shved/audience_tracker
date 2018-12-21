@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'roda', '3.15.0'
+gem 'rack-cache'
 gem 'thin'
 gem 'timers', '4.2.0'
 gem 'dotenv'

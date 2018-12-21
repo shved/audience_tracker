@@ -5,10 +5,8 @@ require_relative 'default_storage'
 class Handler
   include Singleton
 
-  def heartbeat(customer_id, video_id)
-    @storage.register_heartbeat(customer_id, video_id)
-    # TODO: дергать класс отвечающий за протухание с помощью timers
-    # и из него дергать стораж
+  def pulse(customer_id, video_id)
+    @storage.record_pulse(customer_id, video_id)
   end
 
   def customer_stat(customer_id)
@@ -23,6 +21,7 @@ class Handler
 
   def initialize
     @storage = pick_storage
+    @audience_stack = AudienceStack.instance
     super
   end
 
