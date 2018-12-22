@@ -31,9 +31,5 @@ class AudienceTracker < Roda
       puts resp
       resp
     end
-
-    r.get 'report' do
-      SessionsWatcher.instance.report
-    end
   end
 end

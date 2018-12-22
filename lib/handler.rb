@@ -9,7 +9,6 @@ class Handler
   def pulse(customer_id, video_id)
     @storage.store_stat(customer_id, video_id)
     SessionsWatcher.instance.pulse(customer_id, video_id)
-    SessionsWatcher.instance.report
   end
 
   def customer_stat(customer_id)
