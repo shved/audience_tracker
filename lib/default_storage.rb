@@ -6,10 +6,17 @@ class DefaultStorage
 
   StorageError = Class.new(StandardError)
 
-  def record_pulse(customer_id, video_id)
+  def store_session(customer_id, video_id)
     @lock.synchronize do
       @videos[video_id] << customer_id
       @customers[customer_id] << video_id
+    end
+  end
+
+  def delete_session(customer_id, video_id)
+    @lock.synchronize do
+      @videos[customer_id].delete(video_id)
+      @customers[video_id].delete(customer_id)
     end
   end
 
