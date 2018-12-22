@@ -1,4 +1,3 @@
-require_relative 'sessions_watcher'
 require 'timers'
 
 class PoroStorage
@@ -11,8 +10,9 @@ class PoroStorage
       @customer_id = customer_id
       @video_id = video_id
       @timers = Timers::Group.new
-      @lock = Mutex.new
       @threads = []
+      @lock = Mutex.new
+      @storage = AudienceTracker.config.storage
       debug_report(:initiated)
       touch
     end
@@ -20,8 +20,8 @@ class PoroStorage
     def touch
       @lock.synchronize do
         @timers.cancel
-        debug_report(:touched)
         @timers.after(SESSION_TIMEOUT) { expire }
+        debug_report(:touched)
 
         @threads << Thread.new do
           @timers.wait
@@ -31,7 +31,7 @@ class PoroStorage
 
     def expire
       @lock.synchronize do
-        SessionsWatcher.instance.null_session(self)
+        @storage.null_session(self)
         debug_report(:deleted)
         @threads.each(&:exit)
       end
@@ -60,7 +60,7 @@ class PoroStorage
     end
 
     def log_entry(action)
-      "#{self} #{action}:\t\t#{Time.now}\t\tSessions count: #{SessionsWatcher.instance.sessions.count}"
+      "#{self} #{action}:\t\t#{Time.now}\t\tSessions count: #{@storage.sessions.count}"
     end
   end
 end

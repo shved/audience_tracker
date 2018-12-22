@@ -1,41 +1,44 @@
-require_relative 'poro_storage/sessions_watcher'
+require_relative 'poro_storage/session'
 require 'singleton'
-require 'set'
 
 class PoroStorage
   include Singleton
 
+  attr_reader :sessions
+
   def store(customer_id, video_id)
     @lock.synchronize do
-      SessionsWatcher.instance.pulse(customer_id, video_id)
-      @videos[video_id] << customer_id
-      @customers[customer_id] << video_id
+      session = fetch_session(customer_id, video_id)
+
+      if session
+        session.touch
+      else
+        @sessions << Session.new(customer_id, video_id)
+      end
     end
   end
 
-  def purge(customer_id, video_id)
-    @lock.synchronize do
-      @videos[video_id].delete(customer_id)
-      @videos.delete(video_id) if @videos[video_id].empty?
-
-      @customers[customer_id].delete(video_id)
-      @customers.delete(customer_id) if @customers[customer_id].empty?
-    end
+  def null_session(session)
+    @sessions.delete(session)
   end
 
   def customer_count(customer_id)
-    @customers[customer_id].size
+    @sessions.select { |session| session.customer_id == customer_id }.size
   end
 
   def video_count(video_id)
-    @videos[video_id].size
+    @sessions.select { |session| session.video_id == video_id }.size
   end
 
   private
 
   def initialize
-    @videos = Hash.new { |hash, key| hash[key] = Set.new }
-    @customers = Hash.new { |hash, key| hash[key] = Set.new }
+    @sessions = Set.new
     @lock = Mutex.new
+    super
+  end
+
+  def fetch_session(customer_id, video_id)
+    @sessions.find { |s| s.customer_id == customer_id && s.video_id == video_id }
   end
 end
