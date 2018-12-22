@@ -2,7 +2,7 @@ require 'timers'
 require_relative 'sessions_watcher'
 
 class Session
-  SESSION_TIMEOUT = 6.freeze
+  SESSION_TIMEOUT = 6
 
   attr_accessor :customer_id, :video_id, :timers
 
