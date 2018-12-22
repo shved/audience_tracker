@@ -1,6 +1,7 @@
 require 'dotenv/load'
 require 'roda'
 require_relative './lib/handler'
+require_relative './lib/sessions_watcher'
 # require 'pry'
 
 class AudienceTracker < Roda
@@ -29,6 +30,10 @@ class AudienceTracker < Roda
       resp = { count: @count }
       puts resp
       resp
+    end
+
+    r.get 'report' do
+      SessionsWatcher.instance.report
     end
   end
 end
