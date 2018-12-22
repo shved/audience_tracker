@@ -1,10 +1,10 @@
 threads = []
-customers = (1..50).to_a
-videos = (1..10).to_a
+customers = (1..5000).to_a
+videos = (1..500).to_a
 
 customers.each do |customer|
   threads << Thread.new do
-    duration = (5..15).to_a.sample
+    duration = (5..20).to_a.sample
     video = videos.sample
 
     # starting offset
@@ -18,8 +18,8 @@ customers.each do |customer|
 end
 
 threads << Thread.new do
-  7.times do
-    interval = (3..10).to_a.sample
+  50.times do
+    interval = (3..7).to_a.sample
     video = videos.sample
     sleep interval
     `curl --get -s localhost:9292/videos/#{video}`
@@ -27,8 +27,8 @@ threads << Thread.new do
 end
 
 threads << Thread.new do
-  7.times do
-    interval = (3..10).to_a.sample
+  50.times do
+    interval = (3..7).to_a.sample
     customer = customers.sample
     sleep interval
     `curl --get -s localhost:9292/customers/#{customer}`

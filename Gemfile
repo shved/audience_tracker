@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'dotenv'
 gem 'dry-configurable'
+gem 'get_process_mem'
 gem 'pry'
 gem 'rack-cache'
 gem 'redis'
