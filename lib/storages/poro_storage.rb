@@ -1,19 +1,19 @@
+require_relative 'poro_storage/sessions_watcher'
 require 'singleton'
 require 'set'
 
-class DefaultStorage
+class PoroStorage
   include Singleton
 
-  StorageError = Class.new(StandardError)
-
-  def store_stat(customer_id, video_id)
+  def store(customer_id, video_id)
     @lock.synchronize do
+      SessionsWatcher.instance.pulse(customer_id, video_id)
       @videos[video_id] << customer_id
       @customers[customer_id] << video_id
     end
   end
 
-  def purge_stat(customer_id, video_id)
+  def purge(customer_id, video_id)
     @lock.synchronize do
       @videos[video_id].delete(customer_id)
       @videos.delete(video_id) if @videos[video_id].empty?
@@ -23,11 +23,11 @@ class DefaultStorage
     end
   end
 
-  def customer_stat(customer_id)
+  def customer_count(customer_id)
     @customers[customer_id].size
   end
 
-  def video_stat(video_id)
+  def video_count(video_id)
     @videos[video_id].size
   end
 

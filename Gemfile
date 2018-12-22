@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'dotenv'
+gem 'dry-configurable'
 gem 'pry'
 gem 'rack-cache'
 gem 'redis'

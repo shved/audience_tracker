@@ -1,10 +1,14 @@
+require_relative 'lib/storages/poro_storage'
+require_relative 'lib/storages/redis_storage'
+require_relative 'lib/handler'
+require 'dry-configurable'
 require 'dotenv/load'
 require 'roda'
-require_relative './lib/handler'
-require_relative './lib/sessions_watcher'
-# require 'pry'
 
 class AudienceTracker < Roda
+  extend Dry::Configurable
+  setting :storage
+
   plugin :json
   plugin :typecast_params
   plugin :caching
@@ -18,18 +22,23 @@ class AudienceTracker < Roda
     end
 
     r.get 'customers', Integer do |customer_id|
-      @count = Handler.instance.customer_stat(customer_id)
-      resp = { count: @count }
-      puts resp
-      resp
+      @count = Handler.instance.customer_count(customer_id)
+      { count: @count }
     end
 
     r.get 'videos', Integer do |video_id|
       response.expires 60, public: true
-      @count = Handler.instance.video_stat(video_id)
-      resp = { count: @count }
-      puts resp
-      resp
+      @count = Handler.instance.video_count(video_id)
+      { count: @count }
     end
   end
+end
+
+AudienceTracker.configure do |config|
+  config.storage =
+    case ENV['STORAGE']
+    when 'redis' then RedisStorage.instance
+    else
+      PoroStorage.instance
+    end
 end
