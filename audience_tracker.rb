@@ -1,10 +1,3 @@
-require_relative 'lib/storages/poro_storage'
-require_relative 'lib/storages/redis_storage'
-require_relative 'lib/handler'
-require 'dry-configurable'
-require 'dotenv/load'
-require 'roda'
-
 class AudienceTracker < Roda
   extend Dry::Configurable
   setting :storage
@@ -39,7 +32,7 @@ end
 AudienceTracker.configure do |config|
   config.expire_time = 6
   config.storage =
-    if ENV['STORAGE'].match?('redis')
+    if ENV.fetch('STORAGE', 'default').match?('redis')
       RedisStorage.new(ENV['STORAGE'])
     else
       PoroStorage.instance

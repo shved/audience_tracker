@@ -1,6 +1,3 @@
-require 'singleton'
-require 'redis'
-
 class RedisStorage
   StorageError = Class.new(StandardError)
 

@@ -2,7 +2,7 @@
 ```
 make run
 # or
-make run APP_ENV=production
+make run RACK_ENV=production
 ```
 To use redis run as
 ```

@@ -1,5 +1,4 @@
-require './audience_tracker'
-require 'rack/cache'
+require './core'
 
 use Rack::Cache,
     metastore: "file:#{__dir__}/tmp/rack-cache/meta",

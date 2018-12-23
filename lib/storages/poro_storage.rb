@@ -1,6 +1,3 @@
-require_relative 'poro_storage/session'
-require 'singleton'
-
 class PoroStorage
   include Singleton
 
@@ -25,6 +22,10 @@ class PoroStorage
 
   def video_count(video_id)
     @sessions.select { |session| session.video_id == video_id }.size
+  end
+
+  def flush!
+    @sessions.clear
   end
 
   private

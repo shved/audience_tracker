@@ -4,3 +4,4 @@
 /rdoc/
 /log/
 /tmp/rack-cache/*
+/coverage/

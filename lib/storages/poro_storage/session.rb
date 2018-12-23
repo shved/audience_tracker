@@ -1,6 +1,3 @@
-require_relative '../../../audience_tracker'
-require 'timers'
-
 class PoroStorage
   class Session
     attr_reader :customer_id, :video_id
@@ -13,14 +10,12 @@ class PoroStorage
       @lock = Mutex.new
       @storage = AudienceTracker.config.storage
       @expire_time = AudienceTracker.config.expire_time
-      debug_report(:initiated)
     end
 
     def touch
       @lock.synchronize do
         @timers.cancel
         @timers.after(@expire_time) { expire }
-        debug_report(:touched)
 
         @threads << Thread.new do
           @timers.wait
@@ -31,7 +26,6 @@ class PoroStorage
     def expire
       @lock.synchronize do
         @storage.null_session(self)
-        debug_report(:deleted)
         @threads.each(&:exit)
       end
     end

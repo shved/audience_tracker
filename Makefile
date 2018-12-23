@@ -6,7 +6,7 @@ setup:
 	bundle install
 
 test:
-	ruby spec/dummy_test.rb
+	bin/rspec
 
 lint:
 	bin/rubocop
