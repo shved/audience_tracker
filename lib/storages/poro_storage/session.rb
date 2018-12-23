@@ -14,7 +14,6 @@ class PoroStorage
       @lock = Mutex.new
       @storage = AudienceTracker.config.storage
       debug_report(:initiated)
-      touch
     end
 
     def touch

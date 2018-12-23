@@ -28,6 +28,7 @@ class AudienceTracker < Roda
 
     r.get 'videos', Integer do |video_id|
       response.expires 60, public: true
+
       @count = Handler.instance.video_count(video_id)
       { count: @count }
     end

@@ -8,13 +8,10 @@ class PoroStorage
 
   def store(customer_id, video_id)
     @lock.synchronize do
-      session = fetch_session(customer_id, video_id)
+      session = Session.new(customer_id, video_id)
+      session = fetch_session(customer_id, video_id) unless @sessions.add?(session)
 
-      if session
-        session.touch
-      else
-        @sessions << Session.new(customer_id, video_id)
-      end
+      session.touch
     end
   end
 

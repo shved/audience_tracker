@@ -11,9 +11,6 @@ test:
 lint:
 	bin/rubocop
 
-doc:
-	bin/yard
-
 run:
 	rackup config.ru
 
