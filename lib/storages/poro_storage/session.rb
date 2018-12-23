@@ -1,9 +1,8 @@
+require_relative '../../../audience_tracker'
 require 'timers'
 
 class PoroStorage
   class Session
-    SESSION_TIMEOUT = 6
-
     attr_reader :customer_id, :video_id
 
     def initialize(customer_id, video_id)
@@ -13,13 +12,14 @@ class PoroStorage
       @threads = []
       @lock = Mutex.new
       @storage = AudienceTracker.config.storage
+      @expire_time = AudienceTracker.config.expire_time
       debug_report(:initiated)
     end
 
     def touch
       @lock.synchronize do
         @timers.cancel
-        @timers.after(SESSION_TIMEOUT) { expire }
+        @timers.after(@expire_time) { expire }
         debug_report(:touched)
 
         @threads << Thread.new do
@@ -36,30 +36,12 @@ class PoroStorage
       end
     end
 
-    def ==(other)
-      @customer_id == other.customer_id && @video_id == other.video_id
-    end
-
     def eql?(other)
       @customer_id == other.customer_id && @video_id == other.video_id
     end
 
     def hash
       (@customer_id + @video_id).hash
-    end
-
-    def to_s
-      "Session<#{@customer_id}:#{@video_id}>"
-    end
-
-    private
-
-    def debug_report(action)
-      puts log_entry(action) if ENV['APP_ENV'] == 'development'
-    end
-
-    def log_entry(action)
-      "#{self} #{action}:\t\t#{Time.now}\t\tSessions count: #{@storage.sessions.count}"
     end
   end
 end

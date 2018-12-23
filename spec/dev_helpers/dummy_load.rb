@@ -1,5 +1,5 @@
 threads = []
-customers = (1..5000).to_a
+customers = (1..1000).to_a
 videos = (1..500).to_a
 
 customers.each do |customer|
@@ -18,7 +18,7 @@ customers.each do |customer|
 end
 
 threads << Thread.new do
-  50.times do
+  20.times do
     interval = (3..7).to_a.sample
     video = videos.sample
     sleep interval
@@ -27,7 +27,7 @@ threads << Thread.new do
 end
 
 threads << Thread.new do
-  50.times do
+  20.times do
     interval = (3..7).to_a.sample
     customer = customers.sample
     sleep interval

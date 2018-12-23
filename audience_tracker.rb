@@ -8,6 +8,7 @@ require 'roda'
 class AudienceTracker < Roda
   extend Dry::Configurable
   setting :storage
+  setting :expire_time
 
   plugin :json
   plugin :typecast_params
@@ -36,9 +37,10 @@ class AudienceTracker < Roda
 end
 
 AudienceTracker.configure do |config|
+  config.expire_time = 6
   config.storage =
-    case ENV['STORAGE']
-    when 'redis' then RedisStorage.instance
+    if ENV['STORAGE'].match?('redis')
+      RedisStorage.new(ENV['STORAGE'])
     else
       PoroStorage.instance
     end
