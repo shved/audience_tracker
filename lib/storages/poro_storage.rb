@@ -13,19 +13,27 @@ class PoroStorage
   end
 
   def null_session(session)
-    @sessions.delete(session)
+    @lock.synchronize do
+      @sessions.delete(session)
+    end
   end
 
   def customer_count(customer_id)
-    @sessions.select { |session| session.customer_id == customer_id }.size
+    @lock.synchronize do
+      @sessions.select { |session| session.customer_id == customer_id }.size
+    end
   end
 
   def video_count(video_id)
-    @sessions.select { |session| session.video_id == video_id }.size
+    @lock.synchronize do
+      @sessions.select { |session| session.video_id == video_id }.size
+    end
   end
 
   def flush!
-    @sessions.clear
+    @lock.synchronize do
+      @sessions.clear
+    end
   end
 
   private

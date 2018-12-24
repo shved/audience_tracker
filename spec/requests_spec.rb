@@ -1,12 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe 'API Requests', type: :request do
-  before(:each) do
-    PoroStorage.instance.flush!
-  end
-
-  after(:each) do
-    PoroStorage.instance.flush!
+  include_context 'storage context' do
+    let!(:storage) { PoroStorage.instance }
   end
 
   it 'should register a pulse from client' do
@@ -18,17 +14,24 @@ RSpec.describe 'API Requests', type: :request do
     expect(response.content_type).to eq('application/json')
   end
 
-  it "should return customer's videos count" do
-    get('/customers/1')
+  context 'with initial two pulse requests' do
+    before(:each) do
+      get('/pulse?customer_id=1&video_id=1')
+      get('/pulse?customer_id=1&video_id=1')
+    end
 
-    expect(response.code.to_i).to eq 200
-    expect(JSON.load(response.body)['count']).to eq 0
-  end
+    it "should return customer's videos count" do
+      get('/customers/1')
 
-  it "should return video's customers count" do
-    get('/videos/1')
+      expect(response.code.to_i).to eq 200
+      expect(JSON.load(response.body)['count']).to eq 1
+    end
 
-    expect(response.code.to_i).to eq 200
-    expect(JSON.load(response.body)['count']).to eq 0
+    it "should return video's customers count" do
+      get('/videos/1')
+
+      expect(response.code.to_i).to eq 200
+      expect(JSON.load(response.body)['count']).to eq 1
+    end
   end
 end

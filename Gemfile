@@ -9,10 +9,11 @@ gem 'thin'
 gem 'timers', '4.2.0'
 
 group :development, :test do
-  gem 'rubocop', '~> 0.61.1', require: false
+  gem 'mock_redis'
   gem 'pry'
-  gem 'rspec'
   gem 'rack-test'
+  gem 'rspec'
+  gem 'rubocop', '~> 0.61.1', require: false
 end
 
 gem 'simplecov', require: false, group: :test

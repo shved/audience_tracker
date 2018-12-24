@@ -4,8 +4,10 @@ class RedisStorage
   DUMMY_VALUE = 0
   SCAN_STEP = 10_000
 
-  def initialize(url)
-    @redis = Redis.new(url: url)
+  attr_reader :redis
+
+  def initialize(url = nil)
+    @redis = pick_redis(url)
     @expire_time = AudienceTracker.config.expire_time
   end
 
@@ -22,14 +24,24 @@ class RedisStorage
     scan(:video, video_id).size
   end
 
+  def flush!
+    @redis.flushall
+  end
+
   private
+
+  def pick_redis(url)
+    return MockRedis.new if ENV['APP_ENV'] == 'test'
+
+    url.nil? ? Redis.new : Redis.new(url: url)
+  end
 
   def scan(type, id)
     pattern = case type
               when :customer then "#{id}:*"
               when :video    then "*:#{id}"
               else
-                raise StorageError.new("empty key pattern")
+                raise StorageError, 'empty key pattern'
               end
 
     enumerator = @redis.scan_each(match: pattern, count: SCAN_STEP)

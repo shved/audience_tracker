@@ -30,7 +30,8 @@ class AudienceTracker < Roda
 end
 
 AudienceTracker.configure do |config|
-  config.expire_time = 6
+  config.expire_time = ENV['APP_ENV'] == 'test' ? 6 : 1
+
   config.storage =
     if ENV.fetch('STORAGE', 'default').match?('redis')
       RedisStorage.new(ENV['STORAGE'])
