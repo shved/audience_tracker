@@ -36,6 +36,7 @@ class PoroTimeBucketStorage
   def run_buckets_rotator
     @lock.synchronize do
       return if @rotator_started
+
       @current_bucket_index = 0
       @rotator_started = true
 
@@ -71,6 +72,7 @@ class PoroTimeBucketStorage
   def populate_buckets
     @lock.synchronize do
       return @buckets if defined?(@buckets)
+
       @buckets = {}
       @buckets_count.times do |index|
         @buckets[index] = Set.new
