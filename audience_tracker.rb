@@ -2,6 +2,7 @@ class AudienceTracker < Roda
   extend Dry::Configurable
   setting :storage
   setting :expire_time
+  setting :time_bucket_expire_time_precision_factor
 
   plugin :json
   plugin :typecast_params
@@ -30,12 +31,16 @@ class AudienceTracker < Roda
 end
 
 AudienceTracker.configure do |config|
-  config.expire_time = ENV['RACK_ENV'] == 'test' ? 1 : 6
+  config.expire_time = ENV['RACK_ENV'] == 'test' ? 2 : 6
 
   config.storage =
-    if ENV.fetch('STORAGE', 'default').match?('redis')
+    if ENV['STORAGE']&.match?('redis')
       RedisStorage.new(ENV['STORAGE'])
-    else
+    elsif ENV['STORAGE'] == 'poro_time_bucket'
+      PoroTimeBucketStorage.instance
+    elsif ENV['STORAGE'] == 'poro_storage'
       PoroStorage.instance
     end
+
+  config.time_bucket_expire_time_precision_factor = 2
 end

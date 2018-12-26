@@ -1,6 +1,6 @@
 threads = []
 customers = (1..1000).to_a
-videos = (1..500).to_a
+videos = (1..100).to_a
 
 customers.each do |customer|
   threads << Thread.new do
@@ -8,7 +8,7 @@ customers.each do |customer|
     video = videos.sample
 
     # starting offset
-    sleep((1..4).to_a.sample)
+    sleep([1, 2, 3, 4, 6, 7, 8, 9].sample)
 
     duration.times do
       `curl --get -s localhost:9292/pulse -d customer_id=#{customer} -d video_id=#{video}`
