@@ -8,14 +8,9 @@ RSpec.describe RedisStorage do
   let!(:customer_id) { 1000_000 }
 
   it 'should not store duplicates' do
-    threads = []
-    100.times do
-      threads << Thread.new do
-        storage.store(1, 1)
-      end
-    end
-
-    threads.join
+    storage.store(1, 1)
+    storage.store(1, 1)
+    storage.store(1, 1)
 
     expect(storage.redis.keys.size).to eq 1
     expect(storage.redis.keys.first).to eq '1:1'
@@ -23,7 +18,6 @@ RSpec.describe RedisStorage do
 
   it 'should expire sessions in given time' do
     storage.store(1, 1)
-    puts storage.redis.ttl('1:1')
     expect(storage.redis.ttl('1:1').to_i).to be > 0
   end
 end

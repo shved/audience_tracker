@@ -1,5 +1,7 @@
 class PoroStorage
   class Session
+    include SessionComparable
+
     attr_reader :customer_id, :video_id
 
     def initialize(customer_id, video_id)
@@ -8,7 +10,7 @@ class PoroStorage
       @timers = Timers::Group.new
       @threads = []
       @lock = Mutex.new
-      @storage = AudienceTracker.config.storage
+      @storage = PoroStorage
       @expire_time = AudienceTracker.config.expire_time
     end
 
@@ -25,17 +27,9 @@ class PoroStorage
 
     def expire
       @lock.synchronize do
-        @storage.null_session(self)
+        @storage.instance.null_session(self)
         @threads.each(&:exit)
       end
-    end
-
-    def eql?(other)
-      @customer_id == other.customer_id && @video_id == other.video_id
-    end
-
-    def hash
-      (@customer_id + @video_id).hash
     end
   end
 end

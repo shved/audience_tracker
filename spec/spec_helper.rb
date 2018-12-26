@@ -4,6 +4,7 @@ require 'simplecov'
 require 'mock_redis'
 
 ENV['RACK_ENV'] = 'test'
+ENV['STORAGE'] = 'poro_storage'
 
 SimpleCov.start do
   add_filter '/spec/'

@@ -9,7 +9,7 @@ Metrics/LineLength:
   Max: 120
 
 Metrics/MethodLength:
-  Max: 10
+  Max: 15
 
 Layout/IndentHash:
   EnforcedStyle: consistent

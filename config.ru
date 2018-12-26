@@ -6,3 +6,7 @@ use Rack::Cache,
     verbose: true
 
 run AudienceTracker.freeze.app
+
+Signal.trap('INT') do
+  PoroTimeBucketStorage.instance.shut_down_rotator
+end
