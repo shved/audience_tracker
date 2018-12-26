@@ -62,7 +62,6 @@ class PoroTimeBucketStorage
 
   def initialize
     @lock = Mutex.new
-    @time_factor = AudienceTracker.config.time_bucket_expire_time_precision_factor
     @buckets_count = AudienceTracker.config.expire_time + 1 # + 1 in favor of accuracy gap
     @current_bucket_index = 0
     populate_buckets

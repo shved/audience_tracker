@@ -41,6 +41,4 @@ AudienceTracker.configure do |config|
     elsif ENV['STORAGE'] == 'poro_storage'
       PoroStorage.instance
     end
-
-  config.time_bucket_expire_time_precision_factor = 2
 end
