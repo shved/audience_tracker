@@ -8,7 +8,7 @@ ENV RACK_ENV $RACK_ENV
 # ARG STORAGE='redis'
 # ENV STORAGE $STORAGE
 
-ADD . /audience_tracker
+ADD Gemfile /audience_tracker/Gemfile
 
 WORKDIR /audience_tracker
 
@@ -17,7 +17,7 @@ RUN set -ex && \
     gem install -q --no-rdoc --no-ri bundler && \
     bundle install
 
-EXPOSE 9292
+COPY . /audience_tracker
 
 # CMD ["redis-server", "--daemonize", "yes"]
 CMD ["make", "run"]

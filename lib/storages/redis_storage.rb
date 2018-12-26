@@ -11,6 +11,8 @@ class RedisStorage
     @expire_time = AudienceTracker.config.expire_time
   end
 
+  ### handler api do
+
   def store(customer_id, video_id)
     key = session_key(customer_id, video_id)
     @redis.setex(key, @expire_time, DUMMY_VALUE)
@@ -24,6 +26,8 @@ class RedisStorage
     scan(:video, video_id).size
   end
 
+  ### handler api end
+
   def flush!
     @redis.flushall
   end
@@ -31,7 +35,7 @@ class RedisStorage
   private
 
   def pick_redis(url)
-    return MockRedis.new if ENV['APP_ENV'] == 'test'
+    return MockRedis.new if ENV['RACK_ENV'] == 'test'
 
     url.nil? ? Redis.new : Redis.new(url: url)
   end

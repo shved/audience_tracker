@@ -1,6 +1,6 @@
 .PHONY: doc
 
-default: lint test doc
+default: lint test
 
 setup:
 	bundle install
@@ -11,6 +11,8 @@ test:
 lint:
 	bin/rubocop
 
+console:
+	bin/console
+
 run:
 	rackup config.ru
-

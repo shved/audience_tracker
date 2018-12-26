@@ -3,23 +3,23 @@ require 'securerandom'
 
 RSpec.describe PoroStorage do
   include_context 'storage context' do
-    let!(:storage) { PoroStorage.instance }
+    let!(:storage) { described_class.instance }
   end
 
-  let!(:customer_id) { 1000_000 }
+  let!(:customer_id) { 1_000_000 }
 
   it 'should not store duplicates' do
     threads = []
+
     100.times do
       threads << Thread.new do
         storage.store(1, 1)
       end
     end
-
     threads.join
 
     expect(storage.sessions.size).to eq 1
-    expect(storage.sessions.first.eql?(PoroStorage::Session.new(1, 1))).to be true
+    expect(storage.sessions.first.eql?(described_class::Session.new(1, 1))).to be true
   end
 
   it 'should return actual customer counter' do

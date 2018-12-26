@@ -3,18 +3,14 @@ class PoroStorage
 
   attr_reader :sessions
 
+  ### handler api do
+
   def store(customer_id, video_id)
     @lock.synchronize do
       session = Session.new(customer_id, video_id)
       session = fetch_session(customer_id, video_id) unless @sessions.add?(session)
 
       session.touch
-    end
-  end
-
-  def null_session(session)
-    @lock.synchronize do
-      @sessions.delete(session)
     end
   end
 
@@ -27,6 +23,14 @@ class PoroStorage
   def video_count(video_id)
     @lock.synchronize do
       @sessions.select { |session| session.video_id == video_id }.size
+    end
+  end
+
+  ### handler api end
+
+  def null_session(session)
+    @lock.synchronize do
+      @sessions.delete(session)
     end
   end
 
