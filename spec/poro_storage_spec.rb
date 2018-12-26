@@ -56,7 +56,7 @@ RSpec.describe PoroStorage do
   it 'should expire sessions in given time' do
     storage.store(1, 1)
     puts "\tWaiting for session to expire..."
-    sleep(AudienceTracker.config.expire_time + 0.5)
+    sleep(AudienceTracker.config.expire_time + 0.1)
     expect(storage.sessions.size).to eq 0
   end
 end
