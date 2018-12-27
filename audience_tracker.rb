@@ -30,11 +30,12 @@ class AudienceTracker < Roda
 end
 
 AudienceTracker.configure do |config|
-  config.expire_time = ENV['RACK_ENV'] == 'test' ? 2 : 6
+  expire_seconds = ENV.fetch('EXPIRE_SECONDS', 6).to_i
+  config.expire_time = ENV['RACK_ENV'] == 'test' ? 2 : expire_seconds
 
   config.storage =
     case ENV['STORAGE']
-    when 'poro_storage'     then PoroStorage.instance
+    when 'poro'             then PoroStorage.instance
     when 'redis'            then RedisStorage.new
     when 'poro_time_bucket' then PoroTimeBucketStorage.instance
     end

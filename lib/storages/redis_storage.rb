@@ -1,5 +1,6 @@
 class RedisStorage
   include Singleton
+  include KeyFormats
 
   DUMMY_VALUE = 0
 
@@ -9,10 +10,7 @@ class RedisStorage
     @lock = Mutex.new
     @expire_time = AudienceTracker.config.expire_time
     @redis = pick_redis
-    if ENV['RACK_ENV'] != 'test'
-      configure_redis
-      spawn_subscriber
-    end
+    setup_redis unless ENV['RACK_ENV'] == 'test'
   end
 
   ### handler api do
@@ -20,9 +18,9 @@ class RedisStorage
   def store(customer_id, video_id)
     @lock.synchronize do
       @redis.multi do
-        @redis.sadd(customer_key(customer_id), collection_item(video_id))
-        @redis.sadd(video_key(video_id), collection_item(customer_id))
         @redis.setex(session_key(customer_id, video_id), @expire_time, DUMMY_VALUE)
+        @redis.sadd(customer_key(customer_id), collection_item(video_id, timestamp))
+        @redis.sadd(video_key(video_id), collection_item(customer_id, timestamp))
       end
     end
   end
@@ -56,6 +54,11 @@ class RedisStorage
 
   private
 
+  def setup_redis
+    configure_redis
+    spawn_subscriber
+  end
+
   def pick_redis
     return MockRedis.new if ENV['RACK_ENV'] == 'test'
 
@@ -71,17 +74,17 @@ class RedisStorage
     @subscriber_thread ||= Thread.new do
       @subscriber_redis ||= Redis.new
       @subscriber_redis.subscribe('__keyevent@0__:expired'.to_sym) do |on|
-        on.message do |channel, message|
+        on.message do |_channel, message|
           null_session(message)
         end
       end
     end
   end
 
-  def null_session(key)
+  def null_session(key) # rubocop:disable Metrics/AbcSize
     @lock.synchronize do
       expired_items_time = timestamp - @expire_time
-      customer_id, video_id = key.split(':').map { |el| el.to_i }
+      customer_id, video_id = disassemble_session_key(key)
 
       videos_to_delete = items_to_delete_from(:customers, customer_id, video_id, expired_items_time)
       customers_to_delete = items_to_delete_from(:videos, video_id, customer_id, expired_items_time)
@@ -90,8 +93,6 @@ class RedisStorage
         @redis.srem(customer_key(customer_id), videos_to_delete.to_a) if videos_to_delete.any?
         @redis.srem(video_key(video_id), customers_to_delete.to_a) if customers_to_delete.any?
       end
-
-      puts "CUSTOMERS COUNT #{@redis.keys('customers:*').size}\n"
     end
   end
 
@@ -102,34 +103,12 @@ class RedisStorage
           end
 
     items = Set.new(@redis.smembers(key))
-    _items_to_delete = items.select do |item|
-      _item_id, item_timestamp = item.split(':').map { |el| el.to_i }
-      _item_id == item_id.to_i && item_timestamp <= expired_items_time
+    items_to_delete = items.select do |item|
+      set_item_id, item_timestamp = item.split(':').map { |el| el.to_i }
+      set_item_id == item_id.to_i && item_timestamp <= expired_items_time
     end
 
-    _items_to_delete
-  end
-
-  def session_key(customer_id, video_id)
-    "#{customer_id}:#{video_id}"
-  end
-
-  def customer_key(customer_id)
-    "customers:#{customer_id}"
-  end
-
-  def video_key(video_id)
-    "videos:#{video_id}"
-  end
-
-  def collection_item(id)
-    "#{id}:#{timestamp}"
-  end
-
-  def items_to_ids(items)
-    items.map do |item|
-      item.split(':')[0]
-    end
+    items_to_delete
   end
 
   def timestamp

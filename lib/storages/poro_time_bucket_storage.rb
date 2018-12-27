@@ -85,8 +85,6 @@ class PoroTimeBucketStorage
       @current_bucket_index = bucket_time
 
       @buckets[@current_bucket_index].clear
-      # handy debugger output
-      # puts "#{@buckets.values.map { |s| s.count }}\n"
     end
   end
 

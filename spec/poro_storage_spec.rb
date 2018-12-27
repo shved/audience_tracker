@@ -11,7 +11,7 @@ RSpec.describe PoroStorage do
   it 'should not store duplicates' do
     threads = []
 
-    100.times do
+    10.times do
       threads << Thread.new do
         storage.store(1, 1)
       end
