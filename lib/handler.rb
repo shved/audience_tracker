@@ -17,7 +17,7 @@ class Handler
 
   def initialize
     @storage = AudienceTracker.config.storage
-    # ugly dry-configurable issue workaround for PoroTimeBucketStorage
+    # for PoroTimeBucketStorage infinite loop
     @storage.run_buckets_rotator if @storage.respond_to?(:run_buckets_rotator)
   end
 end

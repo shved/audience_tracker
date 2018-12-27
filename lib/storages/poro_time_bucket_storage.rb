@@ -33,14 +33,14 @@ class PoroTimeBucketStorage
     end
   end
 
-  def run_buckets_rotator
+  def run_rotator_thread
     @lock.synchronize do
       return if @rotator_started
 
       @current_bucket_index = 0
       @rotator_started = true
 
-      @buckets_rotator = Thread.new do
+      @rotator_thread = Thread.new do
         loop do
           time = Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
           true while time == Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
@@ -51,9 +51,9 @@ class PoroTimeBucketStorage
     end
   end
 
-  def shut_down_rotator
+  def exit_rotator_thread
     @lock.synchronize do
-      @buckets_rotator.exit
+      @rotator_thread.exit
       @rotator_started = false
     end
   end
@@ -63,7 +63,7 @@ class PoroTimeBucketStorage
   def initialize
     @lock = Mutex.new
     @buckets_count = AudienceTracker.config.expire_time + 1 # + 1 in favor of accuracy gap
-    @current_bucket_index = 0
+    @current_bucket_index = bucket_time
     populate_buckets
     @rotator_started = false
   end
@@ -82,11 +82,13 @@ class PoroTimeBucketStorage
 
   def switch_bucket
     @lock.synchronize do
-      @current_bucket_index = Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor % @buckets_count
+      @current_bucket_index = bucket_time
 
       @buckets[@current_bucket_index].clear
-      # handy debugger output
-      # puts "#{@buckets.values.map { |s| s.count }}\n"
     end
+  end
+
+  def bucket_time
+    Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor % @buckets_count
   end
 end

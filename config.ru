@@ -8,5 +8,6 @@ use Rack::Cache,
 run AudienceTracker.freeze.app
 
 Signal.trap('INT') do
-  PoroTimeBucketStorage.instance.shut_down_rotator
+  PoroTimeBucketStorage.instance.exit_rotator_thread
+  RedisStorage.instane.exit_support_threads
 end

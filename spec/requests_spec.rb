@@ -9,7 +9,7 @@ RSpec.describe 'API Requests', type: :request do
     get('/pulse?customer_id=1&video_id=1')
 
     # actually don't have to response pulses
-    # but since it responsd—better test it
+    # but since it responds anyway—better test it
     expect(response.code.to_i).to eq 200
     expect(response.content_type).to eq('application/json')
   end

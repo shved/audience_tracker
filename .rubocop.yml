@@ -22,3 +22,10 @@ Style/FrozenStringLiteralComment:
 
 Style/Documentation:
   Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+# Square brackets blocks are much faster
+Style/SymbolProc:
+  Enabled: false
