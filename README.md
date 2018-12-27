@@ -1,31 +1,32 @@
 # Strating application
-```ruby
+```
 make run
 # or with custom sessions expire time in seconds
-make run EXPIRE_SECONDS=10
+make run EXPIRE_SECONDS=10 # default 6
 ```
 
 # Storages
-To use redis run as. Uses default localhost/0
-```ruby
+To use redis (connects to default localhost/0)
+```
 make run STORAGE=redis
 ```
 Thread havy PORO storage (defaul)
-```ruby
+```
 make run STORAGE=poro
 ```
 Less threaded and less accuracy PORO storage
-```ruby
+```
 make run STORAGE=poro_time_bucket
 ```
 
 # Lint and test
-```ruby
+```
 make lint
 make test
 ```
 
-# Handy console
-```ruby
+# Handy dev things
+```
 make console
+ruby spec/dev_helpers/dummy_load.rb
 ```

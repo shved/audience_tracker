@@ -36,7 +36,7 @@ AudienceTracker.configure do |config|
   config.storage =
     case ENV['STORAGE']
     when 'poro'             then PoroStorage.instance
-    when 'redis'            then RedisStorage.new
+    when 'redis'            then RedisStorage.instance
     when 'poro_time_bucket' then PoroTimeBucketStorage.instance
     end
 end

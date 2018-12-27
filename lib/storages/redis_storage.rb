@@ -6,13 +6,6 @@ class RedisStorage
 
   attr_reader :redis
 
-  def initialize
-    @lock = Mutex.new
-    @expire_time = AudienceTracker.config.expire_time
-    @redis = pick_redis
-    setup_redis unless ENV['RACK_ENV'] == 'test'
-  end
-
   ### handler api do
 
   def store(customer_id, video_id)
@@ -53,6 +46,13 @@ class RedisStorage
   end
 
   private
+
+  def initialize
+    @lock = Mutex.new
+    @expire_time = AudienceTracker.config.expire_time
+    @redis = pick_redis
+    setup_redis unless ENV['RACK_ENV'] == 'test'
+  end
 
   def setup_redis
     configure_redis

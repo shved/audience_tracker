@@ -41,12 +41,7 @@ class PoroTimeBucketStorage
       @rotator_started = true
 
       @rotator_thread = Thread.new do
-        loop do
-          time = Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
-          true while time == Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
-
-          switch_bucket
-        end
+        rotator_loop
       end
     end
   end
@@ -77,6 +72,15 @@ class PoroTimeBucketStorage
         @buckets[index] = Set.new
       end
       @buckets
+    end
+  end
+
+  def rotator_loop
+    loop do
+      time = Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
+      true while time == Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
+
+      switch_bucket
     end
   end
 
