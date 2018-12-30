@@ -1,3 +1,8 @@
+# Intallation
+```
+make setup
+```
+
 # Strating application
 ```
 make run
