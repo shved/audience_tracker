@@ -16,8 +16,6 @@ class Handler
   private
 
   def initialize
-    @storage = AudienceTracker.config.storage
-    # for PoroTimeBucketStorage infinite loop
-    @storage.run_buckets_rotator if @storage.respond_to?(:run_buckets_rotator)
+    @storage = AudienceTracker.config.storage.instance
   end
 end

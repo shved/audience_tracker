@@ -60,7 +60,7 @@ class PoroTimeBucketStorage
     @buckets_count = AudienceTracker.config.expire_time + 1 # + 1 in favor of accuracy gap
     @current_bucket_index = bucket_time
     populate_buckets
-    @rotator_started = false
+    run_rotator_thread
   end
 
   def populate_buckets
