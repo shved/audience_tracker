@@ -36,9 +36,8 @@ class RedisStorage
 
   ### handler api end
 
-  def exit_support_threads
+  def exit_subscriber_thread
     @subscriber_thread&.exit
-    @gc_thread&.exit
   end
 
   def flush!

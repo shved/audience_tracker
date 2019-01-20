@@ -9,5 +9,5 @@ run AudienceTracker.freeze.app
 
 Signal.trap('INT') do
   PoroTimeBucketStorage.instance.exit_rotator_thread
-  RedisStorage.instane.exit_support_threads
+  RedisStorage.instane.exit_subscriber_thread
 end

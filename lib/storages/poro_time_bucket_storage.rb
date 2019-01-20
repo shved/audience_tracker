@@ -37,7 +37,7 @@ class PoroTimeBucketStorage
     @lock.synchronize do
       return if @rotator_started
 
-      @current_bucket_index = 0
+      @current_bucket_index = bucket_time
       @rotator_started = true
 
       @rotator_thread = Thread.new do
@@ -48,7 +48,7 @@ class PoroTimeBucketStorage
 
   def exit_rotator_thread
     @lock.synchronize do
-      @rotator_thread.exit
+      @rotator_thread&.exit
       @rotator_started = false
     end
   end
@@ -58,7 +58,6 @@ class PoroTimeBucketStorage
   def initialize
     @lock = Mutex.new
     @buckets_count = AudienceTracker.config.expire_time + 1 # + 1 in favor of accuracy gap
-    @current_bucket_index = bucket_time
     populate_buckets
     run_rotator_thread
   end
