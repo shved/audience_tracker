@@ -1,3 +1,5 @@
+See the specification in specification.jpg
+
 # Intallation
 ```
 make setup

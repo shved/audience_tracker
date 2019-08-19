@@ -5,3 +5,4 @@
 /log/
 /tmp/rack-cache/*
 /coverage/
+.DS_Store
