@@ -77,10 +77,14 @@ class PoroTimeBucketStorage
   def rotator_loop
     loop do
       time = Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
-      true while time == Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
+      random_throttling
 
-      switch_bucket
+      switch_bucket if time >= Process.clock_gettime(::Process::CLOCK_MONOTONIC).floor
     end
+  end
+
+  def random_throttling
+    sleep(rand() / 40 + 0.01)
   end
 
   def switch_bucket
